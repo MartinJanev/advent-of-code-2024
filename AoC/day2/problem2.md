@@ -1,4 +1,5 @@
---- Day 2: Red-Nosed Reports ---
+## --- Day 2: Red-Nosed Reports ---
+
 Fortunately, the first location The Historians want to search isn't a long walk from the Chief Historian's office.
 
 While the Red-Nosed Reindeer nuclear fusion/fission plant appears to contain no sign of the Chief Historian,
@@ -40,7 +41,8 @@ Analyze the unusual data from the engineers. How many reports are safe?
 
 Answer:
 
---- Part Two ---
+## --- Part Two ---
+
 The engineers are surprised by the low number of safe reports until they realize they forgot to tell
 you about the Problem Dampener.
 

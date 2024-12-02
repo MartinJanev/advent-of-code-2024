@@ -23,12 +23,12 @@ the lists aren't very similar. Maybe you can help The Historians reconcile their
 
 For example:
 
-3   4
-4   3
-2   5
-1   3
-3   9
-3   3
+3   4<br>
+4   3<br>
+2   5<br>
+1   3<br>
+3   9<br>
+3   3<br>
 Maybe the lists are only off by a small amount! To find out, pair up the numbers and measure how far apart they are.
 Pair up the smallest number in the left list with the smallest number in the right list, then the second-smallest left
 number with the second-smallest right number, and so on.
@@ -70,20 +70,20 @@ times that number appears in the right list.
 
 Here are the same example lists again:
 
-3   4
-4   3
-2   5
-1   3
-3   9
-3   3
+3   4<br>
+4   3<br>
+2   5<br>
+1   3<br>
+3   9<br>
+3   3<br>
 For these example lists, here is the process of finding the similarity score:
 
 The first number in the left list is 3. It appears in the right list three times,
-so the similarity score increases by 3 * 3 = 9.
+so the similarity score increases by 3 * 3 = 9.<br>
 The second number in the left list is 4. It appears in the right list once,
- so the similarity score increases by 4 * 1 = 4.
+ so the similarity score increases by 4 * 1 = 4.<br>
 The third number in the left list is 2. It does not appear in the right list,
-so the similarity score does not increase (2 * 0 = 0).
+so the similarity score does not increase (2 * 0 = 0).<br>
 
 The fourth number, 1, also does not appear in the right list.
 The fifth number, 3, appears in the right list three times; the similarity score increases by 9.

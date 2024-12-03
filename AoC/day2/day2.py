@@ -16,19 +16,19 @@ def main():
     numSafeDamperedReports = 0
 
     for reports in reportBigList:
-        if isSafeReport(reports):
+        if part1(reports):
             numSafeReports += 1
 
     print("Part 1:", numSafeReports)
 
     for reports in reportBigList:
-        if isSafeDamperedReport(reports):
+        if part2(reports):
             numSafeDamperedReports += 1
 
     print("Part 2:", numSafeDamperedReports)
 
 
-def isSafeReport(report):
+def part1(report):
     if len(report) < 2:
         return False
 
@@ -55,13 +55,13 @@ def isSafeReport(report):
     return True
 
 
-def isSafeDamperedReport(report):
-    if isSafeReport(report):
+def part2(report):
+    if part1(report):
         return True
 
     for i in range(len(report)):
         modifiedList = report[:i] + report[i + 1:]
-        if isSafeReport(modifiedList): return True
+        if part1(modifiedList): return True
 
     return False
 

@@ -1,17 +1,5 @@
 import re
 
-def main():
-    # Read the data from the file
-    data = read_data("day3.txt")
-
-    # Calculate and print results for both parts
-    print("Part 1:", part1(data))
-    print("Part 2:", part2(data))
-
-
-if __name__ == "__main__":
-    main()
-
 
 def read_data(file_name):
     try:
@@ -44,7 +32,20 @@ def part2(data):
                 enabled = True
             case "don't()":
                 enabled = False
-            case _ if enabled: #default
+            case _ if enabled:  # default
                 result += int(inst[1]) * int(inst[2])
 
     return result
+
+
+def main():
+    # Read the data from the file
+    data = read_data("day3.txt")
+
+    # Calculate and print results for both parts
+    print("Part 1:", part1(data))
+    print("Part 2:", part2(data))
+
+
+if __name__ == "__main__":
+    main()

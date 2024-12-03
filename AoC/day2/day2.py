@@ -1,7 +1,3 @@
-from numbers import Number
-from xml.sax import parse
-
-
 def main():
     try:
         with open("day2.txt", "r") as file:
@@ -64,7 +60,7 @@ def isSafeDamperedReport(report):
         return True
 
     for i in range(len(report)):
-        modifiedList = report[:i] + report[i+1:]
+        modifiedList = report[:i] + report[i + 1:]
         if isSafeReport(modifiedList): return True
 
     return False

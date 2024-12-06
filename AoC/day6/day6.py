@@ -111,6 +111,7 @@ def main():
     result2 = part2(grid)
     print("p2:", result2)
     print("Execution Time:", time.time() - start_time, "seconds")
+    #06.12.2024 implementation: ~under 2minutes xD
 
 
 if __name__ == "__main__":

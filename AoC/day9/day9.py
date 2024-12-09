@@ -54,13 +54,13 @@ def solve(data, fragmentation):
 def main():
     try:
         with open("day9.txt", "r") as file:
-            lines = file.read().strip().split("\n")
+            line = file.read().strip()
     except FileNotFoundError:
         print("File not found in the specified path.")
         return
 
-    part1_result = part1(lines)
-    part2_result = part2(lines)
+    part1_result = part1(line)
+    part2_result = part2(line)
 
     print(f"Part 1: {part1_result}")
     print(f"Part 2: {part2_result}")

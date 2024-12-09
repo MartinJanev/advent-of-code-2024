@@ -11,7 +11,7 @@ def part2(lines):
 
 
 def solve(data, fragmentation):
-    A = deque([])
+    blocks = deque([])
     spacesList = deque([])
     file_id = 0
     FINAL = []
@@ -19,11 +19,11 @@ def solve(data, fragmentation):
     for i, c in enumerate(data):
         if i % 2 == 0:
             if fragmentation:
-                A.append((pos, int(c), file_id))
+                blocks.append((pos, int(c), file_id))
             for _ in range(int(c)):
                 FINAL.append(file_id)
                 if not fragmentation:
-                    A.append((pos, 1, file_id))
+                    blocks.append((pos, 1, file_id))
                 pos += 1
             file_id += 1
         else:
@@ -33,14 +33,14 @@ def solve(data, fragmentation):
                 pos += 1
 
     start_time = time.time()
-    for (pos, sz, file_id) in reversed(A):
-        for space_i, (space_pos, space_sz) in enumerate(spacesList):
-            if space_pos < pos and sz <= space_sz:
-                for i in range(sz):
+    for (pos, size, file_id) in reversed(blocks):
+        for space_i, (space_pos, space_size) in enumerate(spacesList):
+            if space_pos < pos and size <= space_size:
+                for i in range(size):
                     assert FINAL[pos + i] == file_id, f'{FINAL[pos + i]=}'
                     FINAL[pos + i] = None
                     FINAL[space_pos + i] = file_id
-                spacesList[space_i] = (space_pos + sz, space_sz - sz)
+                spacesList[space_i] = (space_pos + size, space_size - size)
                 break
 
     print("Execution Time:", time.time() - start_time, "seconds")

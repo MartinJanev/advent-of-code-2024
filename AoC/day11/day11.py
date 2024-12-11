@@ -90,12 +90,12 @@ def main():
     part2_time = time.time() - start_time
     print(f"Part 2: (Time: {part2_time * 1000:.8f} ms) {part2_result:}")
 
-    # Part 1: (Time: 2.99286842 ms) 199982
-    # Part 2: (Time: 111.12213135 ms) 237149922829154
+    # Part 1: (Time: 2.99286842 ms)
+    # Part 2: (Time: 111.12213135 ms)
 
     # new solution - but first approach for part one is faster though
-    # Part 1: (Time: 158.38479996 ms) 199982
-    # Part 2: (Time: 152.03046799 ms) 237149922829154
+    # Part 1: (Time: 158.38479996 ms)
+    # Part 2: (Time: 152.03046799 ms)
 
 
 if __name__ == "__main__":

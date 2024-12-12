@@ -1,110 +1,108 @@
 import time
+from collections import deque
 
 
 def read_input():
     file_path = "day12.txt"
     try:
         with open(file_path, 'r') as f:
-            lines = f.read().splitlines()
-        grid = {}
-        for y, line in enumerate(lines):
-            for x, c in enumerate(line):
-                grid[x + y * 1j] = c
+            grid = [list(line) for line in f.read().splitlines()]
         return grid
     except FileNotFoundError:
         print(f"File not found: {file_path}")
         return {}
 
 
-def BFS(grid, start):  # essentially a BFS
-    """Performs flood fill on the grid starting from the given position."""
-    region = {start}
-    letter = grid[start]
-    queue = [start]
-    while queue:
-        pos = queue.pop()
-        for dxdy in [1, -1, 1j, -1j]:
-            newPos = pos + dxdy
-            if newPos in grid and newPos not in region and grid[newPos] == letter:
-                region.add(newPos)
-                queue.append(newPos)
-    return region
+def solve(grid):
+    rows = len(grid)
+    cols = len(grid[0])
 
-
-def get_area(region):
-    """Returns the area of the region."""
-    return len(region[1])
-
-
-def get_perimeter(region):
-    """Calculates the perimeter of the region."""
-    perimeter = 0
-    for pos in region[1]:
-        for d in [1, -1, 1j, -1j]:
-            new_pos = pos + d
-            if new_pos not in region[1]:
-                perimeter += 1
-    return perimeter
-
-
-def get_sides_count(region):
-    """Counts distinct sides for the given region."""
-    perim_obj = set()
-    for pos in region[1]:
-        for d in [1, -1, 1j, -1j]:
-            new_pos = pos + d
-            if new_pos not in region[1]:
-                perim_obj.add((new_pos, d))
-
-    sides = 0
-    while len(perim_obj) > 0:
-        pos, d = perim_obj.pop()
-        sides += 1
-        nextPosition = pos + d * 1j
-        while (nextPosition, d) in perim_obj:
-            perim_obj.remove((nextPosition, d))
-            nextPosition += d * 1j
-        nextPosition = pos + d * -1j
-        while (nextPosition, d) in perim_obj:
-            perim_obj.remove((nextPosition, d))
-            nextPosition += d * -1j
-    return sides
-
-
-def part1(grid):
-    """Calculates the total fence price using area * perimeter."""
     regions = []
-    toCover = set(grid.keys())
-    while toCover:
-        start = toCover.pop()
-        region = BFS(grid, start)
-        toCover -= region
-        regions.append((grid[start], region))
+    seen = set()
 
-    price = 0
-    for region in regions:
-        area, perimeter = get_area(region), get_perimeter(region)
-        price += area * perimeter
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) in seen: continue
+            seen.add((r, c))
+            region = {(r, c)}
+            q = deque([(r, c)])
+            crop = grid[r][c]
+            while q:
+                cr, cc = q.popleft()
+                for nr, nc in [(cr - 1, cc), (cr + 1, cc), (cr, cc - 1), (cr, cc + 1)]:
+                    if nr < 0 or nc < 0 or nr >= rows or nc >= cols: continue
+                    if grid[nr][nc] != crop: continue
+                    if (nr, nc) in region: continue
+                    region.add((nr, nc))
+                    q.append((nr, nc))
+            seen |= region
+            regions.append(region)
 
-    return price
+    part1 = (sum(len(region) * perimeter(region) for region in regions))
+    # part2way1 = sum(len(region) * sidesway1(region) for region in regions) -broenje na strani
+    part2way2 = sum(len(region) * sidesway2(region) for region in regions) #broenje na kjoshinja
+
+    return part1, part2way2
 
 
-def part2(grid):
-    """Calculates the total price with a bulk discount using area * sides."""
-    regions = []
-    uncovered = set(grid.keys())
-    while uncovered:
-        start = uncovered.pop()
-        region = BFS(grid, start)
-        uncovered -= region
-        regions.append((grid[start], region))
+def perimeter(region):
+    output = 0
+    for (r, c) in region:
+        output += 4
+        for nr, nc in [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]:
+            if (nr, nc) in region:
+                output -= 1
 
-    price = 0
-    for region in regions:
-        area, sides = get_area(region), get_sides_count(region)
-        price += area * sides
+    return output
 
-    return price
+
+def sidesway1(region):
+    edges = {}
+    for r, c in region:
+        for nr, nc in [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]:
+            if (nr, nc) in region: continue
+            er = (r + nr) / 2
+            ec = (c + nc) / 2
+            edges[(er, ec)] = (er - r, ec - c)
+    seen = set()
+    side_count = 0
+    for edge, direction in edges.items():
+        if edge in seen: continue
+        seen.add(edge)
+        side_count += 1
+        er, ec = edge
+        if er % 1 == 0:
+            for dr in [-1, 1]:
+                cr = er + dr
+                while edges.get((cr, ec)) == direction:
+                    seen.add((cr, ec))
+                    cr += dr
+        else:
+            for dc in [-1, 1]:
+                cc = ec + dc
+                while edges.get((er, cc)) == direction:
+                    seen.add((er, cc))
+                    cc += dc
+
+    return side_count
+
+
+def sidesway2(region):
+    corner_candidates = set()
+    for r, c in region:
+        for cr, cc in [(r - 0.5, c - 0.5), (r + 0.5, c - 0.5), (r + 0.5, c + 0.5), (r - 0.5, c + 0.5)]:
+            corner_candidates.add((cr, cc))
+    corners = 0
+    for cr, cc in corner_candidates:
+        config = [(sr, sc) in region for sr, sc in
+                  [(cr - 0.5, cc - 0.5), (cr + 0.5, cc - 0.5), (cr + 0.5, cc + 0.5), (cr - 0.5, cc + 0.5)]]
+        number = sum(config)
+        if number == 1 or number == 3:
+            corners += 1
+        elif number == 2:
+            if config == [True, False, True, False] or config == [False, True, False, True]:
+                corners += 2
+    return corners
 
 
 def main():
@@ -113,18 +111,14 @@ def main():
     if not grid:
         return
 
-    # Part 1: Calculate total price using number of sides
+    # Calculate total prices using number of sides and bulk discount sides
     start_time = time.time()
-    part1_price = part1(grid)
-    part1_time = time.time() - start_time
+    part1_price, part2_price = solve(grid)
+    execution_time = time.time() - start_time
 
-    # Part 2: Calculate total price using bulk discount sides
-    start_time = time.time()
-    part2_price = part2(grid)
-    part2_time = time.time() - start_time
-
-    print(f"Part 1 - Total Fence Price: {part1_price} (Execution Time: {part1_time * 1000:.8f} ms)")
-    print(f"Part 2 - Bulk Discount Price: {part2_price} (Execution Time: {part2_time * 1000:.8f} ms)")
+    print(f"Part 1 - Total Fence Price: {part1_price}")
+    print(f"Part 2 - Bulk Discount Price: {part2_price}")
+    print(f"(Execution Time: {execution_time * 1000:.8f} ms)")
 
 
 if __name__ == "__main__":

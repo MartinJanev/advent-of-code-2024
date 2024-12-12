@@ -49,26 +49,26 @@ def get_perimeter(region):
 
 def get_sides_count(region):
     """Counts distinct sides for the given region."""
-    perimeter_objects = set()
+    perim_obj = set()
     for pos in region[1]:
         for d in [1, -1, 1j, -1j]:
             new_pos = pos + d
             if new_pos not in region[1]:
-                perimeter_objects.add((new_pos, d))
+                perim_obj.add((new_pos, d))
 
-    distinct_sides = 0
-    while len(perimeter_objects) > 0:
-        pos, d = perimeter_objects.pop()
-        distinct_sides += 1
+    sides = 0
+    while len(perim_obj) > 0:
+        pos, d = perim_obj.pop()
+        sides += 1
         nextPosition = pos + d * 1j
-        while (nextPosition, d) in perimeter_objects:
-            perimeter_objects.remove((nextPosition, d))
+        while (nextPosition, d) in perim_obj:
+            perim_obj.remove((nextPosition, d))
             nextPosition += d * 1j
         nextPosition = pos + d * -1j
-        while (nextPosition, d) in perimeter_objects:
-            perimeter_objects.remove((nextPosition, d))
+        while (nextPosition, d) in perim_obj:
+            perim_obj.remove((nextPosition, d))
             nextPosition += d * -1j
-    return distinct_sides
+    return sides
 
 
 def part1(grid):

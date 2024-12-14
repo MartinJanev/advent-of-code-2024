@@ -36,39 +36,6 @@ def part2(stone, blinks):
     else:
         return part2(stone * 2024, blinks - 1)
 
-
-# def split_stone(stone):
-#     numberOfDigits = len(str(stone))
-#     m = numberOfDigits // 2
-#     l = stone // (10 ** m)
-#     r = stone % (10 ** m)
-#     return l, r
-#
-#
-# def solve(stones, blinks):
-#     stone_counts = defaultdict(int)
-#
-#     # Initialize the stone counts
-#     for stone in stones:
-#         stone_counts[stone] += 1
-#
-#     for _ in range(blinks):
-#         afterStone = defaultdict(int)
-#         for stone, count in stone_counts.items():
-#             if stone == 0:
-#                 afterStone[1] += count
-#             elif len(str(stone)) % 2 == 0:
-#                 left, right = split_stone(stone)
-#                 afterStone[left] += count
-#                 afterStone[right] += count
-#             else:
-#                 afterStone[stone * 2024] += count
-#         stone_counts = afterStone
-#
-#     # Total stones is the sum of all counts
-#     return sum(stone_counts.values())  # sum of all counts in the dictionary for number of stones
-
-
 def main():
     try:
         with open("day11.txt", "r") as file:
@@ -100,3 +67,34 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# def split_stone(stone):
+#     numberOfDigits = len(str(stone))
+#     m = numberOfDigits // 2
+#     l = stone // (10 ** m)
+#     r = stone % (10 ** m)
+#     return l, r
+#
+#
+# def solve(stones, blinks):
+#     stone_counts = defaultdict(int)
+#
+#     # Initialize the stone counts
+#     for stone in stones:
+#         stone_counts[stone] += 1
+#
+#     for _ in range(blinks):
+#         afterStone = defaultdict(int)
+#         for stone, count in stone_counts.items():
+#             if stone == 0:
+#                 afterStone[1] += count
+#             elif len(str(stone)) % 2 == 0:
+#                 left, right = split_stone(stone)
+#                 afterStone[left] += count
+#                 afterStone[right] += count
+#             else:
+#                 afterStone[stone * 2024] += count
+#         stone_counts = afterStone
+#
+#     # Total stones is the sum of all counts
+#     return sum(stone_counts.values())  # sum of all counts in the dictionary for number of stones

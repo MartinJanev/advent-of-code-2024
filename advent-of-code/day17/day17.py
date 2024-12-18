@@ -99,11 +99,6 @@ def main():
     b = int(b1)
     c = int(c1)
 
-    # Print out the values to check if correct
-    # print(f"a: {a}, b: {b}, c: {c}")
-    # print(f"{program_line}")
-    # print("=====================================")
-
     program = [int(x) for x in program_line.split(",")]
 
     # Part 1

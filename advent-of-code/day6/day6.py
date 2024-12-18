@@ -94,7 +94,7 @@ def walk_with_obstruction(grid, start):
 def main():
     # Load the grid from the input file
     try:
-        with open("advent-of-code/day6/day6.txt", "r") as f:
+        with open("day6.txt", "r") as f:
             lines = f.read().splitlines()
     except FileNotFoundError:
         print("Error: The file 'day6.txt' was not found.")

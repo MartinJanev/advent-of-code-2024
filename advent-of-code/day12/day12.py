@@ -39,10 +39,10 @@ def solve(grid):
             regions.append(region)
 
     part1 = (sum(len(region) * perimeter(region) for region in regions))
-    # part2way1 = sum(len(region) * sidesway1(region) for region in regions) -broenje na strani
-    part2way2 = sum(len(region) * sidesway2(region) for region in regions) #broenje na kjoshinja
+    part2way1 = sum(len(region) * sidesway1(region) for region in regions) #-broenje na strani
+    #part2way2 = sum(len(region) * sidesway2(region) for region in regions) #broenje na kjoshinja
 
-    return part1, part2way2
+    return part1, part2way1
 
 
 def perimeter(region):

@@ -3,24 +3,29 @@ import time
 WIDTH = 101
 HEIGHT = 103
 
-arr = [0, 0, 0, 0]
 robots = []
 
 
-def part1(data):
+def parse_input(data):
+    global robots
     for line in data:
-        if line.strip() == "":
+        if not line.strip():
             continue
         pos, vel = line.split()
         px, py = map(int, pos[2:].split(","))
         vx, vy = map(int, vel[2:].split(","))
+        robots.append(((px, py), (vx, vy)))
 
-        nx, ny = px + 100 * vx, py + 100 * vy
-        nx = nx % WIDTH
-        ny = ny % HEIGHT
+
+def part1():
+    arr = [0, 0, 0, 0]
+    for robot in robots:
+        (px, py), (vx, vy) = robot
+        nx, ny = (px + 100 * vx) % WIDTH, (py + 100 * vy) % HEIGHT
 
         if nx == WIDTH // 2 or ny == HEIGHT // 2:
             continue
+
         if nx < WIDTH // 2 and ny < HEIGHT // 2:
             arr[0] += 1
         elif nx > WIDTH // 2 and ny < HEIGHT // 2:
@@ -30,33 +35,26 @@ def part1(data):
         else:
             arr[3] += 1
 
-        robots.append(((px, py), (vx, vy)))
-
     return arr[0] * arr[1] * arr[2] * arr[3]
 
 
 def part2():
     seconds = 0
     while True:
-        grid = [[0 for _ in range(WIDTH)] for _ in range(HEIGHT)]
+        grid = set()  # Use a set for faster lookup
+        clashes = False
         seconds += 1
-        bad = False
 
         for robot in robots:
-            position, velocity = robot
-            px, py = position
-            vx, vy = velocity
+            (px, py), (vx, vy) = robot
+            nx, ny = (px + seconds * vx) % WIDTH, (py + seconds * vy) % HEIGHT
 
-            nx, ny = px + seconds * vx, py + seconds * vy
+            if (nx, ny) in grid:
+                clashes = True
+                break
+            grid.add((nx, ny))
 
-            nx = nx % WIDTH
-            ny = ny % HEIGHT
-
-            grid[ny][nx] += 1
-            if grid[ny][nx] > 1:
-                bad = True
-
-        if not bad:
+        if not clashes:
             return seconds
 
 
@@ -65,11 +63,13 @@ def main():
         with open("day14.txt", "r") as file:
             data = [line.strip() for line in file.readlines()]
     except FileNotFoundError:
-        print("File not found in the specified path.")
+        print("File not found.")
         return
 
+    parse_input(data)
+
     start_time = time.time()
-    part1_result = part1(data)
+    part1_result = part1()
     part1_time = time.time() - start_time
     print(f"Part 1: {part1_result} (Time: {part1_time * 1000:.4f} ms)")
 

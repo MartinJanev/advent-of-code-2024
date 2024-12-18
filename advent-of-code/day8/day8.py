@@ -1,3 +1,4 @@
+import time
 from typing import List, Dict, Tuple, Set
 
 
@@ -68,11 +69,16 @@ def main():
         print("File not found in the specified path.")
         return
 
+    start_time = time.time()
     part1_result = part1(lines)
-    part2_result = part2(lines)
+    part1_time = time.time() - start_time
+    print(f"Part 1: {part1_result:,} (Time: {part1_time * 1000:.4f} ms)")
 
-    print(f"Part 1: {part1_result}")
-    print(f"Part 2: {part2_result}")
+    # Measure time for Part 2
+    start_time = time.time()
+    part2_result = part2(lines)
+    part2_time = time.time() - start_time
+    print(f"Part 2: {part2_result:,} (Time: {part2_time * 1000:.4f} ms)")
 
 
 if __name__ == "__main__":

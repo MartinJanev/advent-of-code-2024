@@ -10,11 +10,11 @@ class Block:
         self.length = length
 
 
-def part1(input: str) -> int:
+def part1(line: str) -> int:
     block = 0
     checksum = 0
 
-    for pair in parse_in_pairs(input):
+    for pair in parse_in_pairs(line):
         file_id, length = pair
         checksum += ((length * (block + block + length - 1)) // 2) * file_id
         block += length
@@ -22,9 +22,9 @@ def part1(input: str) -> int:
     return checksum
 
 
-def parse_in_pairs(input: str) -> List[Tuple[int, int]]:
+def parse_in_pairs(line: str) -> List[Tuple[int, int]]:
     result = []
-    blocks = deque(int(c) for c in input)
+    blocks = deque(int(c) for c in line)
 
     if len(blocks) % 2 == 0:
         blocks.pop()
@@ -61,11 +61,11 @@ def parse_in_pairs(input: str) -> List[Tuple[int, int]]:
     return result
 
 
-def part2(input: str) -> int:
+def part2(line: str) -> int:
     occupied = []
     free = []
 
-    parse2(input, occupied, free)
+    parse2(line, occupied, free)
 
     for b in reversed(occupied):
         for f in free:
@@ -117,13 +117,13 @@ def main():
     start_time = time.time()
     part1_result = part1(line)
     part1_time = time.time() - start_time
-    print(f"Part 1: {part1_result:,} (Time: {part1_time * 1000:.4f} ms)")
+    print(f"Part 1: {part1_result:} (Time: {part1_time * 1000:.4f} ms)")
 
     # Measure time for Part 2
     start_time = time.time()
     part2_result = part2(line)
     part2_time = time.time() - start_time
-    print(f"Part 2: {part2_result:,} (Time: {part2_time * 1000:.4f} ms)")
+    print(f"Part 2: {part2_result:} (Time: {part2_time * 1000:.4f} ms)")
 
 
 if __name__ == "__main__":

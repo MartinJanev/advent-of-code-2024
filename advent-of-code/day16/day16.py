@@ -111,7 +111,7 @@ if __name__ == "__main__":
     part1_result = part1(parsed_input)
     part2_result = part2(parsed_input)
     endtime = time.time() - start_time
-    print(f"Part 1: {part1_result}, Part2: {part2_result} (Time: {endtime * 1000:.8f} ms)")
+    print(f"Part 1: {part1_result}, Part 2: {part2_result} (Time: {endtime * 1000:.8f} ms)")
 
 # More intuitive solution
 

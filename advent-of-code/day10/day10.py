@@ -58,13 +58,13 @@ def main():
     start_time = time.time()
     part1_result = solve_part1(height_map, trailheads)
     part1_time = time.time() - start_time
-    print(f"Part 1: (Time: {part1_time * 1000:.8f} ms) {part1_result:,}")
+    print(f"Part 1: {part1_result:} - (Time: {part1_time * 1000:.8f} ms) ")
 
     # Part 2
     start_time = time.time()
     part2_result = solve_part2(height_map, trailheads)
     part2_time = time.time() - start_time
-    print(f"Part 2: (Time: {part2_time * 1000:.8f} ms) {part2_result:,}")
+    print(f"Part 2: {part2_result:} - (Time: {part2_time * 1000:.8f} ms) ")
 
 
 if __name__ == "__main__":

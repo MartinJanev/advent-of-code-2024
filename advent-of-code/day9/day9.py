@@ -1,6 +1,30 @@
-import time
 from collections import deque
-from typing import List, Tuple
+from typing import List
+
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day9.txt")
+
+
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path):
+    with open(file_path) as file:
+        return file.read().strip()
 
 
 class Block:
@@ -10,7 +34,8 @@ class Block:
         self.length = length
 
 
-def part1(line: str) -> int:
+@profiler
+def part1(line):
     block = 0
     checksum = 0
 
@@ -22,7 +47,7 @@ def part1(line: str) -> int:
     return checksum
 
 
-def parse_in_pairs(line: str) -> List[Tuple[int, int]]:
+def parse_in_pairs(line):
     result = []
     blocks = deque(int(c) for c in line)
 
@@ -61,7 +86,8 @@ def parse_in_pairs(line: str) -> List[Tuple[int, int]]:
     return result
 
 
-def part2(line: str) -> int:
+@profiler
+def part2(line):
     occupied = []
     free = []
 
@@ -81,7 +107,7 @@ def part2(line: str) -> int:
     return check2(occupied)
 
 
-def parse2(input: str, occupied: List[Block], free: List[Block]):
+def parse2(input, occupied, free):
     start = 0
 
     if len(input) % 2 != 0:
@@ -106,25 +132,7 @@ def check2(blocks: List[Block]) -> int:
     return checksum
 
 
-def main():
-    try:
-        with open("day9.txt", "r") as file:
-            line = file.read().strip()
-    except FileNotFoundError:
-        print("File not found in the specified path.")
-        return
-
-    start_time = time.time()
-    part1_result = part1(line)
-    part1_time = time.time() - start_time
-    print(f"Part 1: {part1_result:} (Time: {part1_time * 1000:.4f} ms)")
-
-    # Measure time for Part 2
-    start_time = time.time()
-    part2_result = part2(line)
-    part2_time = time.time() - start_time
-    print(f"Part 2: {part2_result:} (Time: {part2_time * 1000:.4f} ms)")
-
-
 if __name__ == "__main__":
-    main()
+    data = read_data(input_file)
+    part1(data)
+    part2(data)

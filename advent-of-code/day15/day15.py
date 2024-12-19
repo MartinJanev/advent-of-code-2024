@@ -1,8 +1,27 @@
-import time
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day15.txt")
 
 
-def parse_input(filename, part2):
-    grid, moves = open(filename).read().split('\n\n')
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path, part2):
+    with open(file_path) as file:
+        grid, moves = file.read().split('\n\n')
 
     if not part2:
         grid = [list(line) for line in grid.splitlines()]
@@ -24,6 +43,7 @@ def find_robot(grid):
                 return r, c
 
 
+@profiler
 def solve_part1(grid, moves):
     rows = len(grid)
     cols = len(grid[0])
@@ -61,6 +81,7 @@ def solve_part1(grid, moves):
     return sum(100 * r + c for r in range(rows) for c in range(cols) if grid[r][c] == 'O')
 
 
+@profiler
 def solve_part2(grid, moves):
     rows = len(grid)
     cols = len(grid[0])
@@ -105,29 +126,8 @@ def solve_part2(grid, moves):
     return sum(100 * r + c for r in range(rows) for c in range(cols) if grid[r][c] == '[')
 
 
-def main():
-    try:
-        data, moves = parse_input('day15.txt', False)
-        if data is None or moves is None:
-            return
-
-        start_time = time.time()
-        result_part1 = solve_part1(data, moves)
-        elapsed_time = time.time() - start_time
-
-        print(f"Part 1: {result_part1} (Time: {elapsed_time * 1000:.4f} ms)")
-
-        data, moves = parse_input('day15.txt', True)
-
-        start_time2 = time.time()
-        result_part2 = solve_part2(data, moves)
-        elapsed_time2 = time.time() - start_time2
-
-        print(f"Part 2: {result_part2} (Time: {elapsed_time2 * 1000:.4f} ms)")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
 if __name__ == "__main__":
-    main()
+    a, b = read_data(input_file, False)
+    solve_part1(a, b)
+    a, b = read_data(input_file, True)
+    solve_part2(a, b)

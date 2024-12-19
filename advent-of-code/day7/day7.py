@@ -1,82 +1,55 @@
-import time
+from operator import add, mul
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day7.txt")
 
 
-def evaluate_expression(numbers, operators, part):
-    result = numbers[0]
-    for i in range(len(operators)):
-        if operators[i] == '+':
-            result += numbers[i + 1]
-        elif operators[i] == '*':
-            result *= numbers[i + 1]
-        elif part == "part2" and operators[i] == '|':
-            result = int(str(result) + str(numbers[i + 1]))
-    return result
+def read_data(file_path):
+    with open(file_path) as file:
+        return [list(map(int, line.replace(':', '').split())) for line in file]
 
 
-def can_match_target(numbers, target, operators, index, part, memo):
-    # Base case: end of the operators array, check if the expression matches the target
-    if index == len(operators):
-        result = evaluate_expression(numbers, operators, part)
-        return result == target
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
 
-    # Check if we've computed this subproblem
-    memo_key = (tuple(numbers), target, tuple(operators), index, part)
-    if memo_key in memo:
-        return memo[memo_key]
-
-    operators[index] = '+'
-    if can_match_target(numbers, target, operators, index + 1, part, memo):
-        memo[memo_key] = True
-        return True
-
-    operators[index] = '*'
-    if can_match_target(numbers, target, operators, index + 1, part, memo):
-        memo[memo_key] = True
-        return True
-
-    if part == "part2":  # Include concatenation operator only for Part 2
-        operators[index] = '|'
-        if can_match_target(numbers, target, operators, index + 1, part, memo):
-            memo[memo_key] = True
-            return True
-
-    memo[memo_key] = False
-    return False
+    return wrapper_method
 
 
-def process_information(lines, part):
-    result = 0
-    memo = {}
-
-    for line in lines:
-        splitter = line.split(": ")
-        target = int(splitter[0])
-        numbers = list(map(int, splitter[1].split()))
-        operators = [''] * (len(numbers) - 1)
-
-        if can_match_target(numbers, target, operators, 0, part, memo):
-            result += target
-
-    return result
+def cat(a, b): return int(f"{a}{b}")
 
 
-def main():
-    try:
-        with open("day7.txt", "r") as file:
-            lines = file.read().strip().split("\n")
-    except FileNotFoundError:
-        print("File not found in the specified path.")
-        return
+def solve(nums, ops):
+    if len(nums) == 2:
+        return nums[0] == nums[1]
 
-    part1_result = process_information(lines, "part1")
-    print(f"Total Calibration Result (Part 1): {part1_result}")
-
-    start_time = time.time()
-    part2_result = process_information(lines, "part2")
-    print(f"Total Calibration Result (Part 2): {part2_result}")
-
-    print("Execution Time:", time.time() - start_time, "seconds")
+    total, a, b, *rest = nums
+    for op in ops:
+        if solve([total, op(a, b)] + rest, ops):
+            return total
+    return 0
 
 
-if __name__ == "__main__":
-    main()
+@profiler
+def par1(data):
+    return sum(solve(nums, ops=[add, mul]) for nums in data)
+
+
+@profiler
+def par2(data):
+    return sum(solve(nums, ops=[add, mul, cat]) for nums in data)
+
+
+if __name__ == '__main__':
+    data = read_data(input_file)
+    par1(data)
+    par2(data)

@@ -1,13 +1,27 @@
-import time
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day17.txt")
 
 
-def getlines(file):
-    try:
-        with open(f"{file}", "r") as file:
-            return file.readlines()
-    except FileNotFoundError:
-        print("File not found in the specified path.")
-        return []
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path):
+    with open(file_path) as file:
+        return file.readlines()
 
 
 def getdata(data):
@@ -74,45 +88,30 @@ def run_program(a, b, c, program):
     return res
 
 
-def part2(program, cursor, sofar):
+def part2Solver(program, cursor, sofar):
     for candidate in range(8):
         if run_program(sofar * 8 + candidate, 0, 0, program) == program[cursor:]:
             if cursor == 0:
                 return sofar * 8 + candidate
-            ret = part2(program, cursor - 1, sofar * 8 + candidate)
+            ret = part2Solver(program, cursor - 1, sofar * 8 + candidate)
             if ret is not None:
                 return ret
     return None
 
 
-def main():
-    # Read the lines from the file
-    fileStr = "day17.txt"
-    lines = getlines(fileStr)
+@profiler
+def part2():
+    return part2Solver(program, len(program) - 1, 0)
 
-    if not lines:
-        return  # Exit if no lines were read
 
-    # Extract data from file
-    a1, b1, c1, program_line = getdata(lines[0]), getdata(lines[1]), getdata(lines[2]), getdata(lines[4])
-    a = int(a1)
-    b = int(b1)
-    c = int(c1)
-
-    program = [int(x) for x in program_line.split(",")]
-
-    # Part 1
-    start_time = time.time()
-    part1_result = ",".join([str(x) for x in run_program(a, b, c, program)])  # part 1 result
-    part1_time = time.time() - start_time
-    print(f"Part 2: {part1_result} (Time: {part1_time * 1000:.8f} ms)")
-
-    # Part 2
-    start_time = time.time()
-    part2_result = part2(program, len(program) - 1, 0)
-    part2_time = time.time() - start_time
-    print(f"Part 2: {part2_result} (Time: {part2_time * 1000:.8f} ms)")
+@profiler
+def part1():
+    return ",".join([str(x) for x in run_program(a, b, c, program)])
 
 
 if __name__ == "__main__":
-    main()
+    lines = read_data(input_file)
+    a, b, = int(getdata(lines[0])), int(getdata(lines[1]))
+    c, program = int(getdata(lines[2])), [int(x) for x in getdata(lines[4]).split(",")]
+    part1()
+    part2()

@@ -1,4 +1,28 @@
-import time
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day14.txt")
+
+
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path):
+    with open(file_path) as file:
+        return [line.strip() for line in file.readlines()]
+
 
 WIDTH = 101
 HEIGHT = 103
@@ -17,6 +41,7 @@ def parse_input(data):
         robots.append(((px, py), (vx, vy)))
 
 
+@profiler
 def part1():
     arr = [0, 0, 0, 0]
     for robot in robots:
@@ -38,6 +63,7 @@ def part1():
     return arr[0] * arr[1] * arr[2] * arr[3]
 
 
+@profiler
 def part2():
     seconds = 0
     while True:
@@ -58,26 +84,7 @@ def part2():
             return seconds
 
 
-def main():
-    try:
-        with open("day14.txt", "r") as file:
-            data = [line.strip() for line in file.readlines()]
-    except FileNotFoundError:
-        print("File not found.")
-        return
-
-    parse_input(data)
-
-    start_time = time.time()
-    part1_result = part1()
-    part1_time = time.time() - start_time
-    print(f"Part 1: {part1_result} (Time: {part1_time * 1000:.4f} ms)")
-
-    start_time = time.time()
-    part2_result = part2()
-    part2_time = time.time() - start_time
-    print(f"Part 2: {part2_result} seconds (Time: {part2_time * 1000:.4f} ms)")
-
-
 if __name__ == "__main__":
-    main()
+    parse_input(read_data(input_file))
+    part1()
+    part2()

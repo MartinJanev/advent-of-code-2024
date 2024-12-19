@@ -1,5 +1,25 @@
 from collections import defaultdict, deque
 
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day4.txt")
+
+
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
 
 def parse_ordering_rules(file_data):
     rules = defaultdict(set)  # Default to a set for easy additions
@@ -62,7 +82,7 @@ def fix_order(update, rules):
 def get_middle(list):
     return list[len(list) // 2]
 
-
+@profiler
 def main():
     # Read input data (assuming it's in a file named `day5.txt`)
     with open("day5.txt", "r") as f:
@@ -81,9 +101,7 @@ def main():
         else:  # Part 2
             part2 += get_middle(fix_order(update, ordering_rules))
 
-    # Output results
-    print("Total middle page sum of correctly ordered updates:", part1)
-    print("Total middle page sum of fixed updates:", part2)
+    return ", ".join(map(str, [part1, part2]))
 
 
 if __name__ == "__main__":

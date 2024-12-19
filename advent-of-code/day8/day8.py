@@ -1,8 +1,32 @@
-import time
-from typing import List, Dict, Tuple, Set
+from typing import List, Set
+
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day8.txt")
 
 
-def get_antenna_positions(lines: List[str]) -> Dict[str, List[Tuple[int, int]]]:
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path):
+    with open(file_path) as file:
+        return file.read().strip().split("\n")
+
+
+def get_antenna_positions(lines):
     size_y = len(lines)
     size_x = len(lines[0])
 
@@ -53,33 +77,17 @@ def calculate_antinodes(lines: List[str], include_harmonics: bool) -> int:
     return len(antinode_coords)
 
 
-def part1(lines: List[str]) -> int:
+@profiler
+def part1(lines):
     return calculate_antinodes(lines, include_harmonics=False)
 
 
-def part2(lines: List[str]) -> int:
+@profiler
+def part2(lines):
     return calculate_antinodes(lines, include_harmonics=True)
 
 
-def main():
-    try:
-        with open("day8.txt", "r") as file:
-            lines = file.read().strip().split("\n")
-    except FileNotFoundError:
-        print("File not found in the specified path.")
-        return
-
-    start_time = time.time()
-    part1_result = part1(lines)
-    part1_time = time.time() - start_time
-    print(f"Part 1: {part1_result:,} (Time: {part1_time * 1000:.4f} ms)")
-
-    # Measure time for Part 2
-    start_time = time.time()
-    part2_result = part2(lines)
-    part2_time = time.time() - start_time
-    print(f"Part 2: {part2_result:,} (Time: {part2_time * 1000:.4f} ms)")
-
-
 if __name__ == "__main__":
-    main()
+    data = read_data(input_file)
+    part1(data)
+    part2(data)

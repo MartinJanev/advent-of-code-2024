@@ -1,3 +1,44 @@
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day4.txt")
+
+
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(data):
+    try:
+        with open(data, "r") as f:
+            grid_data = []
+            for line in f.readlines():
+                grid_data.append(line.strip())
+
+        # Convert the grid data into a 2D character array
+
+        grid = []
+        for row in grid_data:
+            grid.append(list(row))
+
+    except FileNotFoundError:
+        print("File not found")
+
+    return grid
+
+
+@profiler
 def part1(grid):
     rows = len(grid)
     cols = len(grid[0])
@@ -34,6 +75,7 @@ def matches(grid, x, y, direction, target):
     return True
 
 
+@profiler
 def part2(grid):
     rows = len(grid)
     cols = len(grid[0])
@@ -75,31 +117,7 @@ def matchesXMASPattern(grid, x, y):
     return mLeft or mRight or mUp or mDown
 
 
-def main():
-    # Load the input file
-    try:
-        with open("day4.txt", "r") as f:
-            grid_data = []
-            for line in f.readlines():
-                grid_data.append(line.strip())
-
-        # Convert the grid data into a 2D character array
-
-        grid = []
-        for row in grid_data:
-            grid.append(list(row))
-
-        # Part 1: Find all "XMAS" occurrences
-        part1_result = part1(grid)
-        print(f"Part 1 result: {part1_result}")
-
-        # Part 2: Find all "X-MAS" patterns
-        part2_result = part2(grid)
-        print(f"Part 2 result: {part2_result}")
-
-    except FileNotFoundError:
-        print("File not found")
-
-
 if __name__ == "__main__":
-    main()
+    grid = read_data(input_file)
+    part1(grid)
+    part2(grid)

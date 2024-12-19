@@ -1,7 +1,32 @@
-import time
 from functools import cache
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day11.txt")
 
 
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path):
+    with open(file_path) as file:
+        input_data = file.read().strip()
+        return [int(x) for x in input_data.split(" ")]
+
+
+@profiler
 def part1(stones):
     for _ in range(25):
         output = []
@@ -22,78 +47,26 @@ def part1(stones):
 
 
 @cache
-def part2(stone, blinks):
+def part2Solver(stone, blinks):
     if blinks == 0:
         return 1
     if stone == 0:
-        return part2(1, blinks - 1)
+        return part2Solver(1, blinks - 1)
     string = str(stone)
     length = len(string)
 
     if length % 2 == 0:
-        return part2(int(string[:length // 2]), blinks - 1) + part2(int(string[length // 2:]), blinks - 1)
+        return part2Solver(int(string[:length // 2]), blinks - 1) + part2Solver(int(string[length // 2:]), blinks - 1)
     else:
-        return part2(stone * 2024, blinks - 1)
+        return part2Solver(stone * 2024, blinks - 1)
 
-def main():
-    try:
-        with open("day11.txt", "r") as file:
-            input_data = file.read().strip()
-            stones = [int(x) for x in input_data.split(" ")]
-    except FileNotFoundError:
-        print("File not found in the specified path.")
-        return
 
-    # Part 1
-    start_time = time.time()
-    part1_result = part1(stones)  # part 1
-    part1_time = time.time() - start_time
-    print(f"Part 1: (Time: {part1_time * 1000:.8f} ms) {part1_result:}")
-
-    # Part 2
-    start_time = time.time()
-    part2_result = sum(part2(stone, 75) for stone in stones)  # part 2
-    part2_time = time.time() - start_time
-    print(f"Part 2: (Time: {part2_time * 1000:.8f} ms) {part2_result:}")
-
-    # Part 1: (Time: 2.99286842 ms)
-    # Part 2: (Time: 111.12213135 ms)
-
-    # new solution - but first approach for part one is faster though
-    # Part 1: (Time: 158.38479996 ms)
-    # Part 2: (Time: 152.03046799 ms)
+@profiler
+def part2():
+    return sum(part2Solver(stone, 75) for stone in stones)
 
 
 if __name__ == "__main__":
-    main()
-
-# def split_stone(stone):
-#     numberOfDigits = len(str(stone))
-#     m = numberOfDigits // 2
-#     l = stone // (10 ** m)
-#     r = stone % (10 ** m)
-#     return l, r
-#
-#
-# def solve(stones, blinks):
-#     stone_counts = defaultdict(int)
-#
-#     # Initialize the stone counts
-#     for stone in stones:
-#         stone_counts[stone] += 1
-#
-#     for _ in range(blinks):
-#         afterStone = defaultdict(int)
-#         for stone, count in stone_counts.items():
-#             if stone == 0:
-#                 afterStone[1] += count
-#             elif len(str(stone)) % 2 == 0:
-#                 left, right = split_stone(stone)
-#                 afterStone[left] += count
-#                 afterStone[right] += count
-#             else:
-#                 afterStone[stone * 2024] += count
-#         stone_counts = afterStone
-#
-#     # Total stones is the sum of all counts
-#     return sum(stone_counts.values())  # sum of all counts in the dictionary for number of stones
+    stones = read_data(input_file)
+    part1(stones)
+    part2()

@@ -1,12 +1,31 @@
-import time
+import os
+from time import perf_counter_ns
+from typing import Any
+
+input_file = os.path.join(os.path.dirname(__file__), "day10.txt")
 
 
-def parse_map(input_map):
-    return [list(map(int, line.strip())) for line in input_map.splitlines()]
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
 
 
-def find_trailheads(height_map):
-    return [(r, c) for r in range(len(height_map)) for c in range(len(height_map[0])) if height_map[r][c] == 0]
+def read_data(file_path):
+    with open(file_path) as file:
+        data = file.read().strip()
+
+    height_map = [list(map(int, line.strip())) for line in data.splitlines()]
+    trailheads = [(r, c) for r in range(len(height_map)) for c in range(len(height_map[0])) if height_map[r][c] == 0]
+    return data, height_map, trailheads
 
 
 def recursive_bfs(height_map, r, c, current_height, visited, found_nines, path_count):
@@ -27,45 +46,25 @@ def recursive_bfs(height_map, r, c, current_height, visited, found_nines, path_c
                 visited.remove((nr, nc))
 
 
-def calculate_score_and_rating(height_map, trailhead):
+def calculate_score_and_rating(hMap, trailhead):
     found_nines = set()
     path_count = [0]
     visited = {trailhead}
-    recursive_bfs(height_map, trailhead[0], trailhead[1], 0, visited, found_nines, path_count)
+    recursive_bfs(hMap, trailhead[0], trailhead[1], 0, visited, found_nines, path_count)
     return len(found_nines), path_count[0]
 
 
-def solve_part1(height_map, trailheads):
-    return sum(calculate_score_and_rating(height_map, t)[0] for t in trailheads)
+@profiler
+def part1(hMap, trails):
+    return sum(calculate_score_and_rating(hMap, t)[0] for t in trails)
 
 
-def solve_part2(height_map, trailheads):
-    return sum(calculate_score_and_rating(height_map, t)[1] for t in trailheads)
-
-
-def main():
-    try:
-        with open("day10.txt", "r") as file:
-            input_data = file.read().strip()
-    except FileNotFoundError:
-        print("File not found in the specified path.")
-        return
-
-    height_map = parse_map(input_data)
-    trailheads = find_trailheads(height_map)
-
-    # Part 1
-    start_time = time.time()
-    part1_result = solve_part1(height_map, trailheads)
-    part1_time = time.time() - start_time
-    print(f"Part 1: {part1_result:} - (Time: {part1_time * 1000:.8f} ms) ")
-
-    # Part 2
-    start_time = time.time()
-    part2_result = solve_part2(height_map, trailheads)
-    part2_time = time.time() - start_time
-    print(f"Part 2: {part2_result:} - (Time: {part2_time * 1000:.8f} ms) ")
+@profiler
+def part2(hMap, trails):
+    return sum(calculate_score_and_rating(hMap, t)[1] for t in trails)
 
 
 if __name__ == "__main__":
-    main()
+    data, height_map, trailheads = read_data(input_file)
+    part1(height_map, trailheads)
+    part2(height_map, trailheads)

@@ -1,19 +1,33 @@
-import time
 from collections import deque
 
+import os
+from time import perf_counter_ns
+from typing import Any
 
-def read_input():
-    file_path = "day12.txt"
-    try:
-        with open(file_path, 'r') as f:
-            grid = [list(line) for line in f.read().splitlines()]
-        return grid
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
-        return {}
+input_file = os.path.join(os.path.dirname(__file__), "day12.txt")
 
 
-def solve(grid):
+# Method for time profiling
+def profiler(method):
+    def wrapper_method(*args: Any, **kwargs: Any) -> Any:
+        start = perf_counter_ns()
+        result = method(*args, **kwargs)
+        end = perf_counter_ns() - start
+        time_len = min(9, ((len(str(end)) - 1) // 3) * 3)
+        timeConv = {9: 'seconds', 6: 'milliseconds', 3: 'microseconds', 0: 'nanoseconds'}
+        print(f"Result: {result} - Time: {end / (10 ** time_len)} {timeConv[time_len]}")
+        return result
+
+    return wrapper_method
+
+
+def read_data(file_path):
+    with open(file_path) as file:
+        return [list(line) for line in file.read().splitlines()]
+
+
+@profiler
+def solve(grid, p2way2):
     rows = len(grid)
     cols = len(grid[0])
 
@@ -39,10 +53,12 @@ def solve(grid):
             regions.append(region)
 
     part1 = (sum(len(region) * perimeter(region) for region in regions))
-    part2way1 = sum(len(region) * sidesway1(region) for region in regions) #-broenje na strani
-    #part2way2 = sum(len(region) * sidesway2(region) for region in regions) #broenje na kjoshinja
-
-    return part1, part2way1
+    if p2way2:
+        part2 = sum(len(region) * sidesway2(region) for region in regions)  # broenje na kjoshinja
+        return part1, "Way 2: " + str(part2)
+    else:
+        part2 = sum(len(region) * sidesway1(region) for region in regions)  # -broenje na strani
+        return part1, "Way 1: " + str(part2)
 
 
 def perimeter(region):
@@ -105,21 +121,7 @@ def sidesway2(region):
     return corners
 
 
-def main():
-    grid = read_input()
-
-    if not grid:
-        return
-
-    # Calculate total prices using number of sides and bulk discount sides
-    start_time = time.time()
-    part1_price, part2_price = solve(grid)
-    execution_time = time.time() - start_time
-
-    print(f"Part 1 - Total Fence Price: {part1_price}")
-    print(f"Part 2 - Bulk Discount Price: {part2_price}")
-    print(f"(Execution Time: {execution_time * 1000:.8f} ms)")
-
-
 if __name__ == "__main__":
-    main()
+    grid = read_data(input_file)
+    solve(grid, p2way2=False)
+    solve(grid, p2way2=True)

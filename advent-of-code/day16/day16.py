@@ -2,7 +2,6 @@ import os
 from time import perf_counter_ns
 from typing import Any
 from collections import deque
-import time
 import heapq
 
 input_file = os.path.join(os.path.dirname(__file__), "day16.txt")

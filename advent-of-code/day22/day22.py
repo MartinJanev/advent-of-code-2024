@@ -28,14 +28,14 @@ def read_data(file_path) -> List[int]:
 
 
 # Function to simulate secret number evolution
-def evolveSecret(s):
-    s ^= s << 6 & 0xFFFFFF
-    s ^= s >> 5 & 0xFFFFFF
-    return s ^ s << 11 & 0xFFFFFF
+def evolveSecret(num):
+    num ^= num << 6 & 0xFFFFFF
+    num ^= num >> 5 & 0xFFFFFF
+    return num ^ num << 11 & 0xFFFFFF
 
 
 @profiler
-def part1(values: List[int]) -> int:
+def part1(values):
     ret = 0
     for s in values:
         nums = [s] + [s := evolveSecret(s) for _ in range(2000)]
@@ -44,7 +44,7 @@ def part1(values: List[int]) -> int:
 
 
 @profiler
-def part2(values: List[int]) -> int:
+def part2(values):
     total = defaultdict(int)
     for s in values:
         nums = [s] + [s := evolveSecret(s) for _ in range(2000)]
